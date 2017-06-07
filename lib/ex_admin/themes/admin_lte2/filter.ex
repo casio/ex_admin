@@ -19,7 +19,12 @@ defmodule ExAdmin.Theme.AdminLte2.Filter do
             if scope do
               input type: :hidden, name: :scope, value: scope
             end
-            for field <- fields(defn), do: build_field(field, q, defn)
+            for field <- fields(defn) do
+              field_type_matching = Application.get_env(:ex_admin, :field_type_matching) || %{}
+              {name, type} = field
+              type = Map.get(field_type_matching, type, type)
+              build_field({name, type}, q, defn)
+            end
             for field <- associations(defn), do: build_field(field, q, defn)
           end
           div ".box-footer" do
